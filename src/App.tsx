@@ -19,6 +19,8 @@ export default function App() {
   const [registros,setRegistros] = useState<Registro[]>([]);
   const [saving,setSaving] = useState(false);
   const [message,setMessage] = useState("");
+  const [testingConnection,setTestingConnection] = useState(false);
+  const [connectionResult,setConnectionResult] = useState<{ok:boolean;text:string}|null>(null);
   const connected = Boolean(supabase);
 
   async function load() {
@@ -28,6 +30,27 @@ export default function App() {
     else setRegistros(data ?? []);
   }
   useEffect(()=>{void load();},[]);
+
+  async function testConnection() {
+    setConnectionResult(null);
+    if (!supabase) {
+      setConnectionResult({ok:false,text:"Supabase não configurado. Defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY na Vercel e faça um novo deploy."});
+      return;
+    }
+    setTestingConnection(true);
+    try {
+      const {error} = await supabase.from("oficina_nomes").select("id").limit(1);
+      if (error) {
+        setConnectionResult({ok:false,text:`A requisição chegou ao Supabase, mas a consulta falhou: ${error.message}. Verifique a tabela e as políticas de acesso.`});
+      } else {
+        setConnectionResult({ok:true,text:"Conexão validada! O Supabase respondeu à consulta de leitura da tabela oficina_nomes. Nenhum dado foi alterado."});
+      }
+    } catch (error) {
+      setConnectionResult({ok:false,text:`Falha de rede ou configuração: ${error instanceof Error ? error.message : "Erro desconhecido"}`});
+    } finally {
+      setTestingConnection(false);
+    }
+  }
 
   async function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,7 +80,8 @@ export default function App() {
       <header className="topbar"><div className="top-left"><button className="menu-trigger icon-button" aria-label="Abrir menu" onClick={()=>setMenu(true)}><Menu size={22}/></button><span className="breadcrumb">Workspace</span><span className="slash">/</span><strong>{titles[page]}</strong></div><div className="top-right"><span className="test-pill"><span className="live-dot"/> Modo teste</span><div className="avatar" title="Oficina Conexão"><UserRound size={19}/></div></div></header>
       <main className="main">
         <div className="page-heading"><div><div className="eyebrow"><span className="eyebrow-line"/> AMBIENTE DE APRENDIZAGEM</div><h1>{page==="inicio"?"Experimente.":titles[page]} <span>{page==="inicio"?"Construa.":""}</span></h1><p>{page==="inicio"?"Um espaço simples para explorar React, interfaces e integração com dados.":page==="registros"?"Visualize os nomes cadastrados no experimento.":page==="sobre"?"Tecnologias, conceitos e objetivos desta oficina.":"Estado atual das integrações deste projeto."}</p></div><div className="heading-mark"><Activity size={23}/></div></div>
-        {page==="inicio"&&<><div className="stats"><div className="stat-card"><div className="stat-icon mint"><Users size={20}/></div><div><small>NOMES REGISTRADOS</small><strong>{registros.length.toString().padStart(2,"0")}</strong></div></div><div className="stat-card"><div className="stat-icon violet"><Database size={20}/></div><div><small>BANCO DE DADOS</small><strong className="stat-value">{connected?"Conectado":"Modo demo"}</strong></div></div><div className="stat-card"><div className="stat-icon blue"><CheckCircle2 size={20}/></div><div><small>STATUS DO PROJETO</small><strong className="stat-value">Operacional</strong></div></div></div>
+        {page==="inicio"&&<><div className="stats"><div className="stat-card"><div className="stat-icon mint"><Users size={20}/></div><div><small>NOMES REGISTRADOS</small><strong>{registros.length.toString().padStart(2,"0")}</strong></div></div><div className="stat-card"><div className="stat-icon violet"><Database size={20}/></div><div><small>BANCO DE DADOS</small><strong className="stat-value">{connected?"Configurado":"Modo demo"}</strong></div></div><div className="stat-card"><div className="stat-icon blue"><CheckCircle2 size={20}/></div><div><small>STATUS DO PROJETO</small><strong className="stat-value">Operacional</strong></div></div></div>
+          <section className="connection-check" aria-label="Teste de conexão Supabase"><div><strong><Database size={18}/> Teste de conexão com o banco</strong><p>Verifique a leitura no Supabase sem cadastrar, editar ou excluir dados.</p></div><button type="button" onClick={()=>void testConnection()} disabled={testingConnection}><Database size={16}/>{testingConnection?"Testando...":"Testar conexão"}</button>{connectionResult&&<p role="status" className={`connection-result ${connectionResult.ok?"is-ok":"is-error"}`}>{connectionResult.text}</p>}</section>
           <section className="primary-card"><div className="section-head"><div className="section-icon"><Plus size={22}/></div><div><span className="overline">EXPERIMENTO 01</span><h2>Cadastro de nomes</h2><p>Nosso primeiro contato com um formulário React.</p></div></div><form onSubmit={save}><label htmlFor="nome">Nome completo</label><div className="input-row"><input id="nome" value={nome} maxLength={120} autoComplete="name" onChange={e=>setNome(e.target.value)} placeholder="Digite um nome para começar..." required/><button type="submit" disabled={saving||!nome.trim()}><Plus size={18}/>{saving?"Salvando...":"Adicionar nome"}</button></div>{message&&<p role="status" className="feedback">{message}</p>}<p className="helper">Este é o único campo do experimento. Simples assim.</p></form></section>
           <section className="recent"><div className="recent-head"><div><h2>Últimos registros</h2><p>Acompanhe os nomes adicionados</p></div><button onClick={()=>navigate("registros")}>Ver todos <ArrowRight size={16}/></button></div>{registros.length?<div className="name-list">{registros.slice(0,4).map(r=><div className="name-item" key={r.id}><span className="person-icon"><UserRound size={17}/></span><strong>{r.nome}</strong><span className="name-date">{new Date(r.created_at).toLocaleDateString("pt-BR")}</span></div>)}</div>:<div className="empty"><Users size={25}/><strong>Nenhum nome registrado ainda</strong><span>Adicione o primeiro nome acima para começar.</span></div>}</section>
         </>}
