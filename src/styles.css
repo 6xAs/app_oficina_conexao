@@ -46,3 +46,26 @@
 .wizard-review-item p{white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0 12px;color:#617187;font-size:13px;line-height:1.6}
 .wizard-review-item button{border:0;background:transparent;color:#286fd3;font-size:12px;font-weight:750;padding:0}
 @media(max-width:760px){.wizard-card{padding:24px 19px}.wizard-topline{align-items:flex-start}.wizard-label{font-size:9px}.wizard-count{font-size:11px}.wizard-question{padding:32px 0 24px}.wizard-question h2{margin-bottom:25px}.wizard-actions button{padding:12px 14px;font-size:11px}.wizard-footnote{line-height:1.5}}
+
+/* Anagrama interativo: letras, espaços de resposta e revelação */
+.anagram-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
+.anagram-heading strong{font-size:13px;color:#273b56}
+.anagram-heading span{font-size:11px;color:#8090a4;white-space:nowrap}
+.anagram-slots,.anagram-tiles{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:7px}
+.anagram-slots{background:#f2f7ff;border:1px solid #e1eaf7;padding:18px 10px;border-radius:14px;min-height:85px}
+.anagram-slot{flex:0 0 auto;display:grid;place-items:center;width:clamp(27px,3.3vw,43px);height:clamp(39px,4.2vw,54px);border:1px solid #d4e0f0;border-bottom:3px solid #a7bbd7;border-radius:8px;color:#1d487d;background:#fff;font-weight:850;font-size:clamp(14px,1.9vw,22px);transition:transform .15s}
+.anagram-slot.is-filled:not(:disabled):hover{transform:translateY(-2px);border-color:#4285e5}
+.anagram-slot.is-revealed{background:#e7f8ef;border-color:#8fd6b1;border-bottom-color:#39a371;color:#146d47}
+.anagram-tiles{padding:22px 6px 5px}
+.anagram-tile{width:clamp(37px,4.1vw,49px);height:clamp(45px,5vw,56px);border:1px solid #dbe4f0;border-bottom:3px solid #c3d1e2;background:white;border-radius:10px;color:#2b5489;font-size:19px;font-weight:850;box-shadow:0 4px 10px #1f38530c;transition:transform .15s,background .15s}
+.anagram-tile:not(:disabled):hover{background:#eaf3ff;transform:translateY(-3px);border-color:#80b0f3}
+.anagram-tile:disabled{opacity:.3;background:#f4f6f9;cursor:default;box-shadow:none}
+.anagram-tools{display:flex;justify-content:center;gap:17px;margin-top:16px}
+.anagram-tools button{display:inline-flex;align-items:center;gap:7px;background:transparent;border:0;color:#637fa0;font-size:12px;font-weight:750;padding:6px}
+.anagram-tools button:disabled{opacity:.4;cursor:not-allowed}
+.anagram-reveal{display:flex;gap:13px;align-items:flex-start;margin-top:24px;padding:17px 19px;border:1px solid #bde9d2;border-radius:12px;background:#eafaf1;color:#15754b}
+.anagram-reveal svg{flex-shrink:0}
+.anagram-reveal strong{font-size:15px;letter-spacing:.4px}
+.anagram-reveal p{font-size:12px;line-height:1.6;margin:5px 0 0;color:#327b5d}
+.anagram-answer{font-size:17px!important;font-weight:850!important;letter-spacing:1px;color:#17784d!important}
+@media(max-width:760px){.anagram-slots{gap:5px;padding:14px 7px;min-height:70px}.anagram-slot{width:clamp(23px,6.1vw,35px);height:42px;font-size:16px}.anagram-tile{width:clamp(37px,10vw,44px);height:47px;font-size:17px}.anagram-heading{align-items:flex-start}.anagram-heading strong{max-width:190px}.anagram-reveal{padding:14px}}
